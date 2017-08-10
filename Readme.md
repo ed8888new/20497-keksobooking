@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Эдуард Данилов](https://up.htmlacademy.ru/javascript/10/user/20497).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Лепёшкин](https://github.com/Spearance).
 
 ---
 
