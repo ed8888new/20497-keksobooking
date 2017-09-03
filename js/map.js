@@ -2,7 +2,8 @@
 
 var PATH_IMAGES = 'img/avatars/user';
 var TYPE_IMAGES = '.png';
-var NUMBER_IMAGES = [1, 8];
+var NUMBER_IMAGES = [1, 2, 3, 4, 5, 6, 7, 8];
+var NUMBER_IMAGES2 = new Array(8);
 
 var OFFER_TITLE = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var OFFER_PRICE = [1000, 1000000];
@@ -31,10 +32,15 @@ var getRandomNum = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
+var getImages = function (x) {
+  x.pop();
+  return x.length;
+};
+
 var announcementBox = function () {
   var announcement = [{
     author: {
-      avatar: PATH_IMAGES + '0' + getRandomNum(NUMBER_IMAGES[0], NUMBER_IMAGES[1]) + TYPE_IMAGES,
+      avatar: PATH_IMAGES + '0' + NUMBER_IMAGES[getImages(NUMBER_IMAGES2)] + TYPE_IMAGES,
     },
     offer: {
       title: getRandomValue(OFFER_TITLE),
@@ -84,8 +90,11 @@ var createPanel = function (announNew) {
   }
   element.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + announNew[0].offer.guests + ' гостей в ' + announNew[0].offer.rooms + ' комнатах';
   element.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + announNew[0].offer.checkin + ', выезд до ' + announNew[0].offer.checkout;
+
+  var lodgeFeatures = element.querySelector('.lodge__features');
   for (var i = 0; i < OFFER_FEATURES.length; i++) {
-    element.querySelector('.lodge__features').innerHTML = '<span class="feature__image feature__image--' + OFFER_FEATURES[i] + '"></span>';
+    var featuresAll = '<span class="feature__image feature__image--' + OFFER_FEATURES[i] + '"></span>';
+    lodgeFeatures.insertAdjacentHTML('beforeend', featuresAll);
   }
   element.querySelector('.lodge__description').textContent = announNew[0].offer.description;
   document.querySelector('.dialog__title>img').setAttribute('src', announNew[0].author.avatar);
