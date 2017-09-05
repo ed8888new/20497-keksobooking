@@ -45,7 +45,7 @@ var announcementBox = function () {
     offer: {
       title: getRandomValue(OFFER_TITLE),
       address: getRandomNum(locationX[0], locationX[1]) + ', ' + getRandomNum(locationY[0], locationY[1]),
-      price: getRandomNum(OFFER_PRICE[0], OFFER_PRICE[0]),
+      price: getRandomNum(OFFER_PRICE[0], OFFER_PRICE[1]),
       type: getRandomValue(OFFER_TYPE),
       rooms: getRandomNum(OFFER_ROOMS[0], OFFER_ROOMS[1]),
       guests: getRandomNum(OFFER_GUESTS[0], OFFER_GUESTS[1]),
@@ -69,7 +69,7 @@ var renderAnnouncement = function (announ) {
   newElement.className = 'pin';
   newElement.style.left = (announ[0].location.x + widthAvatar / 2) + 'px';
   newElement.style.top = (+announ[0].location.y + +heightAvatar) + 'px';
-  newElement.innerHTML = '<img src="' + announ[0].author.avatar + '" class="rounded" width="40" height="40">';
+  newElement.innerHTML = '<img src="' + announ[0].author.avatar + '" class="rounded" width="40" height="40" tabindex="0">';
 
   return newElement;
 };
@@ -80,7 +80,7 @@ var createPanel = function (announNew) {
 
   element.querySelector('.lodge__title').textContent = announNew[0].offer.title;
   element.querySelector('.lodge__address').textContent = announNew[0].offer.address;
-  element.querySelector('.lodge__price').textContent = announNew[0].offer.price + ' \&#8381;' + '/ночь';
+  element.querySelector('.lodge__price').textContent = announNew[0].offer.price + '&#x20bd;/ночь';
   if (announNew[0].offer.type === 'flat') {
     element.querySelector('.lodge__type').textContent = 'Квартира';
   } else if (announNew[0].offer.type === 'bungalo') {
@@ -97,8 +97,10 @@ var createPanel = function (announNew) {
     lodgeFeatures.insertAdjacentHTML('beforeend', featuresAll);
   }
   element.querySelector('.lodge__description').textContent = announNew[0].offer.description;
-  document.querySelector('.dialog__title>img').setAttribute('src', announNew[0].author.avatar);
+  var authorAvatar = document.querySelector('.pin--active>img').getAttribute('src');
 
+  document.querySelector('.dialog__title>img').setAttribute('src', authorAvatar);
+  document.querySelector('.dialog__title>img').setAttribute('tabindex', 0);
   return element;
 };
 
@@ -112,6 +114,51 @@ var createSimilarElement = function () {
 };
 
 var dialog = document.querySelector('.dialog');
+dialog.classList.add('hidden');
 
 tokyo.appendChild(createSimilarElement());
-dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
+
+
+var pinMap = document.querySelector('.tokyo__pin-map');
+
+var removePinActiveElement = function () {
+  var pinActiveElement = document.querySelectorAll('.pin--active');
+
+  if (pinActiveElement[0]) {
+    pinActiveElement[0].classList.remove('pin--active');
+  }
+};
+
+var clickPinHandler = function (evt) {
+  removePinActiveElement();
+
+  evt.path[1].classList.add('pin--active');
+  dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
+  dialog.classList.remove('hidden');
+};
+
+pinMap.addEventListener('click', clickPinHandler);
+
+var keydownPinHandler = function (evt) {
+  if (evt.keyCode === 27) {
+    dialog.classList.add('hidden');
+    removePinActiveElement();
+  } else if (evt.keyCode === 13) {
+    removePinActiveElement();
+    evt.path[1].classList.add('pin--active');
+    dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
+    dialog.classList.remove('hidden');
+  }
+};
+
+pinMap.addEventListener('keydown', keydownPinHandler);
+
+var dialogClose = dialog.querySelector('.dialog__close');
+
+var clickDialogClose = function () {
+  dialog.classList.add('hidden');
+  removePinActiveElement();
+
+};
+
+dialogClose.addEventListener('click', clickDialogClose);
