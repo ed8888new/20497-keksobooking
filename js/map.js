@@ -131,9 +131,13 @@ var removePinActiveElement = function () {
 var clickPinHandler = function (evt) {
   removePinActiveElement();
 
-  evt.path[1].classList.add('pin--active');
-  dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
-  dialog.classList.remove('hidden');
+  var pinActiveElement = evt.target.offsetParent;
+
+  if (pinActiveElement) {
+    pinActiveElement.classList.add('pin--active');
+    dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
+    dialog.classList.remove('hidden');
+  }
 };
 
 pinMap.addEventListener('click', clickPinHandler);
