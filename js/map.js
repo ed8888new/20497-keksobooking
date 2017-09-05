@@ -148,7 +148,7 @@ var keydownPinHandler = function (evt) {
     removePinActiveElement();
   } else if (evt.keyCode === 13) {
     removePinActiveElement();
-    evt.path[1].classList.add('pin--active');
+    evt.target.offsetParent.classList.add('pin--active');
     dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
     dialog.classList.remove('hidden');
   }
