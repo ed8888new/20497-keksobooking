@@ -122,10 +122,9 @@ tokyo.appendChild(createSimilarElement());
 var pinMap = document.querySelector('.tokyo__pin-map');
 
 var removePinActiveElement = function () {
-  var pinActiveElement = document.querySelectorAll('.pin--active');
-
-  if (pinActiveElement[0]) {
-    pinActiveElement[0].classList.remove('pin--active');
+  var pinActiveElement = document.querySelector('.pin--active');
+  if (pinActiveElement !== null) {
+    pinActiveElement.classList.remove('pin--active');
   }
 };
 
