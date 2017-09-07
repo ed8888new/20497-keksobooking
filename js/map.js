@@ -133,7 +133,7 @@ var clickPinHandler = function (evt) {
 
   var pinActiveElement = evt.target.offsetParent;
 
-  if (pinActiveElement.className === 'pin') {
+  if (pinActiveElement.classList.contains('pin')) {
     pinActiveElement.classList.add('pin--active');
     dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
     dialog.classList.remove('hidden');
