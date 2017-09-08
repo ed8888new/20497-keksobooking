@@ -38,14 +38,14 @@ var getImages = function (x) {
 };
 
 var announcementBox = function () {
-  var announcement = [{
+  return {
     author: {
       avatar: PATH_IMAGES + '0' + NUMBER_IMAGES[getImages(NUMBER_IMAGES2)] + TYPE_IMAGES,
     },
     offer: {
       title: getRandomValue(OFFER_TITLE),
       address: getRandomNum(locationX[0], locationX[1]) + ', ' + getRandomNum(locationY[0], locationY[1]),
-      price: getRandomNum(OFFER_PRICE[0], OFFER_PRICE[0]),
+      price: getRandomNum(OFFER_PRICE[0], OFFER_PRICE[1]),
       type: getRandomValue(OFFER_TYPE),
       rooms: getRandomNum(OFFER_ROOMS[0], OFFER_ROOMS[1]),
       guests: getRandomNum(OFFER_GUESTS[0], OFFER_GUESTS[1]),
@@ -59,17 +59,15 @@ var announcementBox = function () {
       x: (getRandomNum(locationX[0], locationX[1])),
       y: (getRandomNum(locationY[0], locationY[1]))
     }
-  }];
-
-  return announcement;
+  };
 };
 
 var renderAnnouncement = function (announ) {
   var newElement = document.createElement('div');
   newElement.className = 'pin';
-  newElement.style.left = (announ[0].location.x + widthAvatar / 2) + 'px';
-  newElement.style.top = (+announ[0].location.y + +heightAvatar) + 'px';
-  newElement.innerHTML = '<img src="' + announ[0].author.avatar + '" class="rounded" width="40" height="40">';
+  newElement.style.left = (announ.location.x + widthAvatar / 2) + 'px';
+  newElement.style.top = (+announ.location.y + +heightAvatar) + 'px';
+  newElement.innerHTML = '<img src="' + announ.author.avatar + '" class="rounded" width="40" height="40" tabindex="0">';
 
   return newElement;
 };
@@ -78,40 +76,127 @@ var createPanel = function (announNew) {
 
   var element = template.cloneNode(true);
 
-  element.querySelector('.lodge__title').textContent = announNew[0].offer.title;
-  element.querySelector('.lodge__address').textContent = announNew[0].offer.address;
-  element.querySelector('.lodge__price').textContent = announNew[0].offer.price + ' \&#8381;' + '/ночь';
-  if (announNew[0].offer.type === 'flat') {
+  element.querySelector('.lodge__title').textContent = announNew.offer.title;
+  element.querySelector('.lodge__address').textContent = announNew.offer.address;
+  element.querySelector('.lodge__price').textContent = announNew.offer.price + '&#x20bd;/ночь';
+  if (announNew.offer.type === 'flat') {
     element.querySelector('.lodge__type').textContent = 'Квартира';
-  } else if (announNew[0].offer.type === 'bungalo') {
+  } else if (announNew.offer.type === 'bungalo') {
     element.querySelector('.lodge__type').textContent = 'Бунгало';
   } else {
     element.querySelector('.lodge__type').textContent = 'Дом';
   }
-  element.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + announNew[0].offer.guests + ' гостей в ' + announNew[0].offer.rooms + ' комнатах';
-  element.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + announNew[0].offer.checkin + ', выезд до ' + announNew[0].offer.checkout;
+  element.querySelector('.lodge__rooms-and-guests').textContent = 'Для ' + announNew.offer.guests + ' гостей в ' + announNew.offer.rooms + ' комнатах';
+  element.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + announNew.offer.checkin + ', выезд до ' + announNew.offer.checkout;
 
   var lodgeFeatures = element.querySelector('.lodge__features');
   for (var i = 0; i < OFFER_FEATURES.length; i++) {
     var featuresAll = '<span class="feature__image feature__image--' + OFFER_FEATURES[i] + '"></span>';
     lodgeFeatures.insertAdjacentHTML('beforeend', featuresAll);
   }
-  element.querySelector('.lodge__description').textContent = announNew[0].offer.description;
-  document.querySelector('.dialog__title>img').setAttribute('src', announNew[0].author.avatar);
+  element.querySelector('.lodge__description').textContent = announNew.offer.description;
 
+  document.querySelector('.dialog__title>img').setAttribute('src', announNew.author.avatar);
+
+  element.tabIndex = 0;
   return element;
 };
+
+var advert = [];
+
+var addItem = function () {
+  for (var i = 0; i < messageCounter; i++) {
+    advert.push(announcementBox());
+  }
+};
+
+addItem();
 
 var createSimilarElement = function () {
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < messageCounter; i++) {
-    fragment.appendChild(renderAnnouncement(announcementBox()));
+    fragment.appendChild(renderAnnouncement(advert[i]));
   }
 
   return fragment;
 };
 
 var dialog = document.querySelector('.dialog');
+dialog.classList.add('hidden');
 
 tokyo.appendChild(createSimilarElement());
-dialog.replaceChild(createPanel(announcementBox()), dialog.children[1]);
+
+var pinMap = document.querySelector('.tokyo__pin-map');
+
+var removePinActiveElement = function () {
+  var pinActiveElement = document.querySelector('.pin--active');
+  if (pinActiveElement !== null) {
+    pinActiveElement.classList.remove('pin--active');
+  }
+};
+
+var src = '';
+var index = 0;
+
+var indexAvatar = function () {
+
+  advert.forEach(function (item, idx) {
+    if (src.indexOf(item.author.avatar) >= 0) {
+      index = idx;
+    }
+  });
+  return index;
+};
+
+var addClassActive = function (x) {
+  x.parentElement.classList.add('pin--active');
+  src = x.src;
+};
+
+var clickPinHandler = function (evt) {
+  removePinActiveElement();
+
+  var pinActiveElement = evt.target;
+
+  if (pinActiveElement.classList.contains('pin')) {
+    pinActiveElement.classList.add('pin--active');
+    src = pinActiveElement.firstChild.src;
+  } else if (pinActiveElement.tagName === 'IMG') {
+    addClassActive(pinActiveElement);
+  }
+
+  indexAvatar();
+
+  dialog.replaceChild(createPanel(advert[index]), dialog.children[1]);
+  dialog.classList.remove('hidden');
+};
+
+pinMap.addEventListener('click', clickPinHandler);
+
+var keydownPinHandler = function (evt) {
+  if (evt.keyCode === 27) {
+    dialog.classList.add('hidden');
+    removePinActiveElement();
+  } else if (evt.keyCode === 13) {
+    removePinActiveElement();
+
+    addClassActive(evt.target);
+
+    indexAvatar();
+
+    dialog.replaceChild(createPanel(advert[index]), dialog.children[1]);
+    dialog.classList.remove('hidden');
+  }
+};
+
+pinMap.addEventListener('keydown', keydownPinHandler);
+
+var dialogClose = dialog.querySelector('.dialog__close');
+
+var clickDialogClose = function () {
+  dialog.classList.add('hidden');
+  removePinActiveElement();
+
+};
+
+dialogClose.addEventListener('click', clickDialogClose);
