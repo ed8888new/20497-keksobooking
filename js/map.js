@@ -304,14 +304,20 @@ var changeRoomHandler = function () {
 
 selectRoom.addEventListener('change', changeRoomHandler);
 
-var userInput = document.querySelector('#title');
+var formContent = document.querySelector('.form__content');
+var userClickSend = document.querySelector('.form__submit');
+var userInput = formContent.querySelectorAll('input[type="text"]');
 
-userInput.addEventListener('invalid', function () {
-  if (!userInput.validity.valid) {
-    if (userInput.validity.tooShort) {
-      userInput.style.borderColor = 'red';
+var validFormHandler = function () {
+
+  [].forEach.call(userInput, function (i) {
+
+    if (!userInput[i].validity.valid) {
+      userInput[i].style.borderColor = 'red';
+    } else if (userInput[i].validity.valid) {
+      userInput[i].removeAttribute('style');
     }
-  } else {
-    userInput.removeAttribute('style');
-  }
-});
+  });
+};
+
+userClickSend.addEventListener('click', validFormHandler);
