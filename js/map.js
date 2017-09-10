@@ -221,20 +221,39 @@ formAnnoun.setAttribute('action', 'https://1510.dump.academy/keksobooking');
 var selectCheckIn = document.querySelector('#timein');
 var selectCheckOut = document.querySelector('#timeout');
 
-var changeCheckInHandler = function (evt) {
-  var checkIn = evt.currentTarget.value;
-  var checkOutOptions = selectCheckOut.querySelectorAll('option');
+var clickChoice = null;
 
-  for (var i = 0; i < checkOutOptions.length; i++) {
-    if (checkOutOptions[i].value === checkIn) {
-      checkOutOptions[i].setAttribute('selected', 0);
-    } else {
-      checkOutOptions[i].removeAttribute('selected');
-    }
+var checkOptions = function (x, y) {
+
+  [].forEach.call(x, function (item) {
+    item.removeAttribute('selected');
+    item.selected = (!((clickChoice.value === item.value) ? true : false)) ? false : true;
+  });
+
+  [].forEach.call(y, function (itm) {
+    itm.removeAttribute('selected');
+    itm.selected = (clickChoice.value === itm.value) ? true : false;
+  });
+
+};
+
+var changeCheckHandler = function (evt) {
+  clickChoice = evt.currentTarget;
+
+  var checkOutOptions = selectCheckOut.querySelectorAll('option');
+  var checkInOptions = selectCheckIn.querySelectorAll('option');
+
+  if (clickChoice.name === selectCheckIn.name) {
+    checkOptions(checkInOptions, checkOutOptions);
+
+  } else if (clickChoice.name === selectCheckOut.name) {
+    checkOptions(checkOutOptions, checkInOptions);
   }
 };
 
-selectCheckIn.addEventListener('change', changeCheckInHandler);
+selectCheckIn.addEventListener('change', changeCheckHandler);
+selectCheckOut.addEventListener('change', changeCheckHandler);
+
 
 var selectType = document.querySelector('#type');
 var selectPrice = document.querySelector('#price');
@@ -289,11 +308,14 @@ var changeRoomHandler = function () {
         var isSelected = false;
 
         [].forEach.call(capacityOptions, function (x) {
+
           var active = (CAPACITY_VARIANTS[selectRoom.value].indexOf(x.value) >= 0) ? false : true;
+
           if (!active && !isSelected) {
             x.selected = true;
             isSelected = true;
           }
+
           x.disabled = active;
           x.hidden = active;
         });
@@ -310,12 +332,12 @@ var userInput = formContent.querySelectorAll('input[type="text"]');
 
 var validFormHandler = function () {
 
-  [].forEach.call(userInput, function (i) {
+  [].forEach.call(userInput, function (item) {
 
-    if (!userInput[i].validity.valid) {
-      userInput[i].style.borderColor = 'red';
-    } else if (userInput[i].validity.valid) {
-      userInput[i].removeAttribute('style');
+    if (!item.validity.valid) {
+      item.style.borderColor = 'red';
+    } else if (item.validity.valid) {
+      item.removeAttribute('style');
     }
   });
 };
