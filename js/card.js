@@ -23,12 +23,11 @@
       element.querySelector('.lodge__checkin-time').textContent = 'Заезд после ' + announNew.offer.checkin + ', выезд до ' + announNew.offer.checkout;
 
       var lodgeFeatures = element.querySelector('.lodge__features');
-      for (var i = 0; i < OFFER_FEATURES.length; i++) {
-        var featuresAll = '<span class="feature__image feature__image--' + OFFER_FEATURES[i] + '"></span>';
+      for (var i = 0; i < window.features.length; i++) {
+        var featuresAll = '<span class="feature__image feature__image--' + window.features[i] + '"></span>';
         lodgeFeatures.insertAdjacentHTML('beforeend', featuresAll);
       }
       element.querySelector('.lodge__description').textContent = announNew.offer.description;
-
       document.querySelector('.dialog__title>img').setAttribute('src', announNew.author.avatar);
 
       element.tabIndex = 0;
@@ -37,13 +36,38 @@
   };
 
   var dialog = document.querySelector('.dialog');
+
+  window.dialog = dialog;
+
   dialog.classList.add('hidden');
 
   var dialogClose = dialog.querySelector('.dialog__close');
 
+
+  window.avatarPanel = {
+    addAvatar: function (src) {
+
+      var index = 0;
+
+      var indexAvatar = function () {
+        window.data.forEach(function (item, idx) {
+          if (src.indexOf(item.author.avatar) >= 0) {
+            index = idx;
+          }
+        });
+        return index;
+      };
+
+      indexAvatar();
+
+      dialog.replaceChild(window.card.createPanel(window.data[index]), dialog.children[1]);
+      dialog.classList.remove('hidden');
+    }
+  };
+
   var clickDialogClose = function () {
     dialog.classList.add('hidden');
-    removePinActiveElement();
+    window.removePin.removePinActiveElement();
 
   };
 

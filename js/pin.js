@@ -3,26 +3,30 @@
 
 (function () {
 
-  var dialog = document.querySelector('.dialog');
+  // var dialog = document.querySelector('.dialog');
+  var MESSAGE_COUNTER = 8;
 
   var pinMap = document.querySelector('.tokyo__pin-map');
 
-  var removePinActiveElement = function () {
-    var pinActiveElement = document.querySelector('.pin--active');
-    if (pinActiveElement !== null) {
-      pinActiveElement.classList.remove('pin--active');
+  window.removePin = {
+    removePinActiveElement: function () {
+      var pinActiveElement = document.querySelector('.pin--active');
+      if (pinActiveElement !== null) {
+        pinActiveElement.classList.remove('pin--active');
+      }
     }
   };
 
-  var index = 0;
+
+  var src;
 
   var addClassActive = function (x) {
     x.parentElement.classList.add('pin--active');
-    var src = x.src;
+    src = x.src;
   };
 
   var clickPinHandler = function (evt) {
-    removePinActiveElement();
+    window.removePin.removePinActiveElement();
 
     var pinActiveElement = evt.target;
 
@@ -33,29 +37,50 @@
       addClassActive(pinActiveElement);
     }
 
-    window.data.indexAvatar();
-    dialog.replaceChild(window.card.createPanel(window.data.advert[index]), dialog.children[1]);
-    dialog.classList.remove('hidden');
-  };
+    window.avatarPanel.addAvatar(src);
 
-  pinMap.addEventListener('click', clickPinHandler);
+  };
 
   var keydownPinHandler = function (evt) {
     if (evt.keyCode === 27) {
-      dialog.classList.add('hidden');
-      removePinActiveElement();
+      window.dialog.classList.add('hidden');
+      window.removePin.removePinActiveElement();
     } else if (evt.keyCode === 13) {
-      removePinActiveElement();
+      window.removePin.removePinActiveElement();
 
       addClassActive(evt.target);
 
-      window.data.indexAvatar();
+      window.avatarPanel.addAvatar(src);
 
-      dialog.replaceChild(window.card.createPanel(window.data.advert[index]), dialog.children[1]);
-      dialog.classList.remove('hidden');
     }
   };
 
+
+  var heightAvatar = pinMap.querySelector('.rounded').getAttribute('height');
+  var widthAvatar = pinMap.querySelector('.rounded').getAttribute('width');
+
+  var renderAnnouncement = function (announ) {
+    var newElement = document.createElement('div');
+    newElement.className = 'pin';
+    newElement.style.left = (announ.location.x + widthAvatar / 2) + 'px';
+    newElement.style.top = (+announ.location.y + +heightAvatar) + 'px';
+    newElement.innerHTML = '<img src="' + announ.author.avatar + '" class="rounded" width="40" height="40" tabindex="0">';
+
+    return newElement;
+  };
+
+  pinMap.addEventListener('click', clickPinHandler);
   pinMap.addEventListener('keydown', keydownPinHandler);
 
+  window.pins = {
+    render: function (data) {
+      var fragment = document.createDocumentFragment();
+
+      for (var i = 0; i < MESSAGE_COUNTER; i++) {
+        fragment.appendChild(renderAnnouncement(data[i]));
+      }
+
+      return fragment;
+    }
+  };
 })();

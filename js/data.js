@@ -35,11 +35,6 @@
     return x.length;
   };
 
-  var tokyo = document.querySelector('.tokyo__pin-map');
-
-  var heightAvatar = tokyo.querySelector('.rounded').getAttribute('height');
-  var widthAvatar = tokyo.querySelector('.rounded').getAttribute('width');
-
   var announcementBox = function () {
     return {
       author: {
@@ -65,53 +60,18 @@
     };
   };
 
-  var renderAnnouncement = function (announ) {
-    var newElement = document.createElement('div');
-    newElement.className = 'pin';
-    newElement.style.left = (announ.location.x + widthAvatar / 2) + 'px';
-    newElement.style.top = (+announ.location.y + +heightAvatar) + 'px';
-    newElement.innerHTML = '<img src="' + announ.author.avatar + '" class="rounded" width="40" height="40" tabindex="0">';
-
-    return newElement;
-  };
-
   var advert = [];
 
-  window.data = {
-    addItem: function () {
-      for (var i = 0; i < messageCounter; i++) {
-        advert.push(announcementBox());
-      }
-    }
-  };
-
-  window.data.addItem();
-
-
-  var src = '';
-  var index = 0;
-
-  window.data = {
-    indexAvatar: function () {
-      advert.forEach(function (item, idx) {
-        if (src.indexOf(item.author.avatar) >= 0) {
-          index = idx;
-        }
-      });
-      return index;
-    }
-  };
-
-  var createSimilarElement = function () {
-    var fragment = document.createDocumentFragment();
+  var addItem = function () {
     for (var i = 0; i < messageCounter; i++) {
-      fragment.appendChild(renderAnnouncement(advert[i]));
+      advert.push(announcementBox());
     }
-
-    return fragment;
   };
 
-  tokyo.appendChild(createSimilarElement());
+  addItem();
+
+  window.data = advert;
+  window.features = OFFER_FEATURES;
+
 
 })();
-
