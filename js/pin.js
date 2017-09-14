@@ -3,7 +3,6 @@
 
 (function () {
 
-  // var dialog = document.querySelector('.dialog');
   var MESSAGE_COUNTER = 8;
 
   var pinMap = document.querySelector('.tokyo__pin-map');
