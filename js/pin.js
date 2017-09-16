@@ -16,7 +16,6 @@
     }
   };
 
-
   var src;
 
   var addClassActive = function (x) {
@@ -37,6 +36,8 @@
     }
 
     window.avatarPanel.addAvatar(src);
+
+    window.dialog.classList.add('hidden');
 
   };
 

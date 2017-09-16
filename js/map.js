@@ -21,6 +21,7 @@
       y: evt.clientY
     };
 
+    var halfPinMainWidth = Math.floor(pinMain.offsetWidth / 2);
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
@@ -35,20 +36,30 @@
         y: moveEvt.clientY
       };
 
-      pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
-      pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
+      var currentY = pinMain.offsetTop - shift.y;
+      var currentX = pinMain.offsetLeft - shift.x;
+
+      var coordsLimit = function (coords, max, min) {
+        if (coords > max) {
+          coords = max;
+        } else if ((coords - min) < 0) {
+          coords = min;
+        }
+        return coords;
+      };
+
+      pinMain.style.top = coordsLimit(currentY, 570, 80) + 'px';
+      pinMain.style.left = coordsLimit(currentX, 1200 - halfPinMainWidth, -halfPinMainWidth) + 'px';
 
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      window.dialog.classList.add('hidden');
+      var currentCoordsX = pinMain.offsetLeft + halfPinMainWidth;
+      var currentCoordsY = pinMain.offsetTop + pinMain.offsetHeight;
 
-      var currentCoordsX = Math.floor(pinMain.offsetWidth / 2);
-      var currentCoordsY = pinMain.offsetHeight;
-
-      var pinMainCoords = 'x: ' + (pinMain.offsetLeft + currentCoordsX) + ', y: ' + (pinMain.offsetTop + currentCoordsY);
+      var pinMainCoords = 'x: ' + currentCoordsX + ', y: ' + currentCoordsY;
 
       fieldAddress.setAttribute('value', pinMainCoords);
       fieldAddress.setAttribute('readonly', 0);
@@ -62,8 +73,6 @@
 
   };
 
-
   pinMain.addEventListener('mousedown', pinMainDragHandler);
-
 
 })();
